@@ -3,7 +3,6 @@
     [
       "env",
       {
-        "modules": false,
         "useBuiltIns": "entry",
         "targets": {
           "browsers": [
