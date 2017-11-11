@@ -18,13 +18,21 @@ export default (container, items, onChange) => {
     const el = document.createElement('li')
     el.dataset.item = item.key
     el.classList.add(styles.menuItem)
+    if (item === items[0]) {
+      el.classList.add(styles.selected)
+    }
     el.textContent = item.name
     container.appendChild(el)
   }
   container.addEventListener('click', ({ target }) => {
-    if (target.classList.contains(styles.menuItem)) {
-      onChange(target.dataset.item)
+    if (!target.classList.contains(styles.menuItem)) {
+      return
     }
+    for (const child of container.children) {
+      child.classList.remove(styles.selected)
+    }
+    target.classList.add(styles.selected)
+    onChange(target.dataset.item)
   })
   return container
 }

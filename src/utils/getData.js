@@ -41,16 +41,18 @@ export default async (factor, [startYear, endYear]) => {
   let serverData
   for (let year = startYear; year <= endYear; ++year) {
     for (let month = 1; month <= 12; ++month) {
-      const k = `${factor}-${year}-${month.toString().padStart(2, '0')}`
-      let monthDataStr = localStorage.getItem(k)
-      if (!monthDataStr) {
-        if (!serverData) {
-          serverData = await getDataFromServer(factor)
-          cacheServerData(factor, serverData)
-        }
-        monthDataStr = localStorage.getItem(k)
+      const yearMonth = `${year}-${month.toString().padStart(2, '0')}`
+      const key = `${factor}-${yearMonth}`
+      const monthDataStr = localStorage.getItem(key)
+      if (monthDataStr) {
+        arr.push(...JSON.parse(monthDataStr))
+        continue
       }
-      arr.push(...JSON.parse(monthDataStr))
+      if (!serverData) {
+        serverData = await getDataFromServer(factor)
+        cacheServerData(factor, serverData)
+      }
+      arr.push(...serverData.filter(item => item.t.startsWith(yearMonth)))
     }
   }
   return arr

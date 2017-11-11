@@ -1,11 +1,12 @@
 import styles from './styles.css'
 
-function createSelector(optionElements) {
+function createSelector(optionElements, selectedVal) {
   const el = document.createElement('select')
   el.classList.add(styles.select)
   for (const o of optionElements) {
     const optionEl = document.createElement('option')
     optionEl.value = o
+    optionEl.selected = selectedVal === o
     optionEl.textContent = o
     el.appendChild(optionEl)
   }
@@ -17,8 +18,8 @@ export default (container, [startYear, endYear], onChange) => {
   for (let i = startYear; i <= endYear; ++i) {
     years.push(i)
   }
-  const startEl = createSelector(years)
-  const endEl = createSelector(years)
+  const startEl = createSelector(years, startYear)
+  const endEl = createSelector(years, endYear)
 
   const handleChange = () => onChange([startEl.value, endEl.value])
   startEl.addEventListener('change', handleChange)

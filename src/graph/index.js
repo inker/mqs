@@ -23,5 +23,6 @@ export default class Graph {
       ...data,
     }
     //
+    const ctx = this.canvas.getContext('2d')
   }
 }
