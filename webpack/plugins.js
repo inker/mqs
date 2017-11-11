@@ -9,6 +9,7 @@ const {
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 module.exports = (env) => [
   new DefinePlugin({
@@ -17,12 +18,10 @@ module.exports = (env) => [
     },
   }),
 
-  new CommonsChunkPlugin({
-    name: 'vendor',
-    // names: 'vendor',
-    // chunks: 'app',
-    minChunks: ({ context }) => context && context.includes('node_modules'),
-  }),
+  // new CommonsChunkPlugin({
+  //   name: 'vendor',
+  //   minChunks: ({ context }) => context && context.includes('node_modules'),
+  // }),
 
   new HtmlWebpackPlugin({
     filename: 'index.html',
@@ -34,6 +33,8 @@ module.exports = (env) => [
       collapseWhitespace: true,
     },
   }),
+
+  new ExtractTextPlugin('styles.css'),
 
   env !== 'dev' && new UglifyJsPlugin({
     uglifyOptions: {

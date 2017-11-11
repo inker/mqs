@@ -1,3 +1,5 @@
+const ExtractTextPlugin = require('extract-text-webpack-plugin')
+
 module.exports = () => [
   {
     test: /\.js$/,
@@ -9,27 +11,28 @@ module.exports = () => [
   },
   {
     test: path => path.endsWith('.css') && !path.endsWith('global.css'),
-    use: [
-      'style-loader',
-      {
-        loader: 'css-loader',
-        options: {
-          modules: true,
-          importLoaders: 1,
-          localIdentName: '[path]___[name]__[local]___[hash:base64:5]',
+    use: ExtractTextPlugin.extract({
+      fallback: 'style-loader',
+      use: [
+        {
+          loader: 'css-loader',
+          options: {
+            modules: true,
+            importLoaders: 1,
+            localIdentName: '[path]___[name]__[local]___[hash:base64:5]',
+          },
         },
-      },
-      'postcss-loader',
-    ],
+        'postcss-loader',
+      ],
+    }),
     exclude: /node_modules/,
   },
   {
     test: /global\.css$/,
-    use: [
-      'style-loader',
-      'css-loader',
-      'postcss-loader',
-    ],
+    use: ExtractTextPlugin.extract({
+      fallback: 'style-loader',
+      use: 'css-loader',
+    }),
     exclude: /node_modules/,
   },
 ]

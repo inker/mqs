@@ -42,10 +42,7 @@ public_tmp/
 .idea/
 
 nginx
-<<<<<<< HEAD
-=======
-src/config.js
->>>>>>> 524ad239735c3a65323d6f09597d58a831ad07c4
+docs/
 
 src/config.js
 package-lock.json
