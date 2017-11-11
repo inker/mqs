@@ -1,0 +1,34 @@
+{
+  "name": "mqs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build:prod": "webpack --colors --config webpack/webpack.config.js --env=prod",
+    "build:analyze": "npm run rmdocs && webpack --colors --config webpack/webpack.config.js --env=analyze",
+    "rmdocs": "rm -rf docs",
+    "start": "npm run rmdocs && node server && webpack-dev-server --colors --watch --config webpack/webpack.config.js --env=dev"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-lodash": "^3.2.11",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.16.0",
+    "babel-preset-stage-2": "^6.24.1",
+    "css-loader": "^0.28.5",
+    "eslint": "^4.11.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-import-resolver-webpack": "~0.8.0",
+    "eslint-plugin-import": "^2.8.0",
+    "html-webpack-plugin": "^2.30.1",
+    "style-loader": "^0.19.0",
+    "uglifyjs-webpack-plugin": "^1.0.1",
+    "webpack": "^3.8.1",
+    "webpack-bundle-analyzer": "^2.9.1",
+    "webpack-dev-server": "^2.9.4"
+  }
+}

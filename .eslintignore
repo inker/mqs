@@ -1,0 +1,8 @@
+/build/**
+/docs/**
+/templates/**
+/tests/**
+/tmp/**
+/public/**
+/public_tmp/**
+/node_modules/**
