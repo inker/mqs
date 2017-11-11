@@ -1,15 +1,9 @@
 const http = require('http')
 const path = require('path')
 const fs = require('fs')
+const zlib = require('zlib')
 
-const config = require('../src/config.json')
-
-function allowCors(res) {
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Credentials', 'true')
-  res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT')
-  res.setHeader('Access-Control-Allow-Headers', 'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers')
-}
+const { server: serverConfig } = require('../src/config.json')
 
 http.createServer((req, res) => {
   const { url } = req
@@ -20,12 +14,15 @@ http.createServer((req, res) => {
     return
   }
   try {
-    allowCors(res)
-    fs.createReadStream(path.join(__dirname, url), 'utf8').pipe(res)
+    res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('Content-Encoding', 'gzip')
+    fs.createReadStream(path.join(__dirname, url), 'utf8')
+      .pipe(zlib.createGzip())
+      .pipe(res)
   } catch (err) {
     console.error(err)
     res.statusCode(404).send('incorrect endpoint')
   }
-}).listen(config.server.port)
-
-console.log('server started')
+}).listen(serverConfig.port, () => {
+  console.log('server started', serverConfig.host, serverConfig.port)
+})
