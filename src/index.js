@@ -4,6 +4,8 @@ import createMenu from './menu'
 import createRange from './range'
 import Graph from './Graph'
 
+import './global.css'
+
 const menuItems = [
   {
     key: 'temperature',
