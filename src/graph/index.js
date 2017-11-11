@@ -1,4 +1,6 @@
-import styles from './styles'
+import objectsAreEqual from '../utils/objectsAreEqual'
+
+import styles from './styles.css'
 
 export default class Graph {
   /**
@@ -11,10 +13,15 @@ export default class Graph {
   }
 
   render(data, options) {
+    if (objectsAreEqual(this.options, options) && objectsAreEqual(this.data, data)) {
+      return
+    }
     this.options = {
-      ...this.options,
       ...options,
     }
-    
+    this.data = {
+      ...data,
+    }
+    //
   }
 }

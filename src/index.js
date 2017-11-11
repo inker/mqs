@@ -2,7 +2,7 @@ import getData from './utils/getData'
 
 import createMenu from './menu'
 import createRange from './range'
-import Graph from './graph'
+import Graph from './Graph'
 
 const menuItems = [
   {

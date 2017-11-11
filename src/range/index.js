@@ -1,7 +1,7 @@
 import styles from './styles.css'
 
 function createSelector(optionElements) {
-  const el = document.createElement('selector')
+  const el = document.createElement('select')
   el.classList.add(styles.select)
   for (const o of optionElements) {
     const optionEl = document.createElement('option')

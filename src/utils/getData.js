@@ -1,8 +1,10 @@
+import { server } from '../config.json'
+
 import getYearMonth from './getYearMonth'
 
 async function getDataFromServer(endpoint) {
   try {
-    const response = await fetch(endpoint)
+    const response = await fetch(`//${server.host}:${server.port}/${endpoint}.json`)
     if (!response.ok) {
       throw new Error(`failed to fetch data: ${endpoint}`)
     }
@@ -29,7 +31,7 @@ async function cacheServerData(factor, arr) {
     monthArr.push(item)
   }
   for (const [k, v] of Object.entries(o)) {
-    localStorage.setItem(k, v)
+    localStorage.setItem(k, JSON.stringify(v))
   }
 }
 
@@ -40,15 +42,15 @@ export default async (factor, [startYear, endYear]) => {
   for (let year = startYear; year <= endYear; ++year) {
     for (let month = 1; month <= 12; ++month) {
       const k = `${factor}-${year}-${month.toString().padStart(2, '0')}`
-      let monthData = JSON.parse(localStorage.getItem(k))
-      if (!monthData) {
+      let monthDataStr = localStorage.getItem(k)
+      if (!monthDataStr) {
         if (!serverData) {
           serverData = await getDataFromServer(factor)
           cacheServerData(factor, serverData)
         }
-        monthData = serverData
+        monthDataStr = localStorage.getItem(k)
       }
-      arr.push(...monthData)
+      arr.push(...JSON.parse(monthDataStr))
     }
   }
   return arr
