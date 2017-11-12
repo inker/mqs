@@ -34,7 +34,7 @@ module.exports = (env) => [
     },
   }),
 
-  new ExtractTextPlugin('styles.css'),
+  new ExtractTextPlugin('styles.[contenthash].css'),
 
   env !== 'dev' && new UglifyJsPlugin({
     uglifyOptions: {
