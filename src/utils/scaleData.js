@@ -1,8 +1,8 @@
 /**
  * @function
- * Normalizes the data for plotting
+ * Scales the data for plotting
  * @param {number[]} arr - data array.
- * @param {number} width - canvas' width.
+ * @param {number} newSize - canvas' width.
  * @returns {number[]} - Y values
  */
 export default (arr, newSize) => {
