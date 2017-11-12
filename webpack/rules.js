@@ -1,6 +1,26 @@
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
-module.exports = () => [
+const getCssLoader = global => global ? 'css-loader' : {
+  loader: 'css-loader',
+  options: {
+    modules: true,
+    importLoaders: 1,
+    localIdentName: '[path]___[name]__[local]___[hash:base64:5]',
+  },
+}
+
+const getCssRule = (env, global) => env === 'dev' ? [
+  'style-loader',
+  getCssLoader(global),
+] : ExtractTextPlugin.extract({
+  fallback: 'style-loader',
+  use: [
+    getCssLoader(global),
+    'postcss-loader',
+  ],
+})
+
+module.exports = (env) => [
   {
     test: /\.js$/,
     loader: 'babel-loader',
@@ -11,28 +31,12 @@ module.exports = () => [
   },
   {
     test: path => path.endsWith('.css') && !path.endsWith('global.css'),
-    use: ExtractTextPlugin.extract({
-      fallback: 'style-loader',
-      use: [
-        {
-          loader: 'css-loader',
-          options: {
-            modules: true,
-            importLoaders: 1,
-            localIdentName: '[path]___[name]__[local]___[hash:base64:5]',
-          },
-        },
-        'postcss-loader',
-      ],
-    }),
+    use: getCssRule(env, false),
     exclude: /node_modules/,
   },
   {
     test: /global\.css$/,
-    use: ExtractTextPlugin.extract({
-      fallback: 'style-loader',
-      use: 'css-loader',
-    }),
+    use: getCssRule(env, true),
     exclude: /node_modules/,
   },
 ]
