@@ -45,10 +45,16 @@ export default async (factor, [startYear, endYear]) => {
       const key = `${factor}-${yearMonth}`
       const monthDataStr = localStorage.getItem(key)
       if (monthDataStr) {
-        arr.push(...JSON.parse(monthDataStr))
-        continue
+        try {
+          arr.push(...JSON.parse(monthDataStr))
+          continue
+        } catch (err) {
+          console.error(err)
+          console.error('could not parse', monthDataStr)
+        }
       }
       if (!serverData) {
+        console.log('fetching data from server for', factor)
         serverData = await getDataFromServer(factor)
         cacheServerData(factor, serverData)
       }
