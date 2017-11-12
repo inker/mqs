@@ -1,0 +1,6 @@
+{
+  "sourceDir": "server",
+  "workingDir": ".",
+  "script": "index.js",
+  "colors": true
+}

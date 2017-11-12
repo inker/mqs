@@ -29,7 +29,7 @@ module.exports = env => ({
     rules: rules(env),
   },
   plugins: plugins(env),
-  devServer: env !== 'dev' ? undefined : {
+  devServer: {
     contentBase: distDir,
     port: 9080,
     open: true,

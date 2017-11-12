@@ -4,11 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build:prod": "webpack --colors --config webpack/webpack.config.js --env=prod",
+    "build:prod": "npm run rmdocs && webpack --colors --config webpack/webpack.config.js --env=prod",
     "build:analyze": "npm run rmdocs && webpack --colors --config webpack/webpack.config.js --env=analyze",
     "rmdocs": "rm -rf docs",
-    "start": "npm run rmdocs && node server & webpack-dev-server --colors --watch --config webpack/webpack.config.js --env=prod",
-    "start:dev": "npm run rmdocs && node server & webpack-dev-server --colors --watch --config webpack/webpack.config.js --env=dev"
+    "server:dev": "forever forever/dev.json",
+    "server:prod": "forever forever/prod.json",
+    "webpack:dev": "webpack-dev-server --colors --watch --config webpack/webpack.config.js --env=dev",
+    "webpack:prod": "webpack-dev-server --colors --config webpack/webpack.config.js --env=prod",
+    "start": "npm run rmdocs && run-p webpack:prod server:prod",
+    "start:dev": "npm run rmdocs && run-p webpack:dev server:dev"
   },
   "author": "",
   "license": "ISC",
@@ -25,7 +29,9 @@
     "eslint-import-resolver-webpack": "~0.8.0",
     "eslint-plugin-import": "^2.8.0",
     "extract-text-webpack-plugin": "^3.0.2",
+    "forever": "^0.15.3",
     "html-webpack-plugin": "^2.30.1",
+    "npm-run-all": "^4.1.2",
     "postcss-cssnext": "^3.0.2",
     "postcss-loader": "^2.0.8",
     "style-loader": "^0.19.0",
