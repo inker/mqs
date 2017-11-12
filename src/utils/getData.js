@@ -1,6 +1,7 @@
 import { server } from '../config.json'
 
 import getYearMonth from './getYearMonth'
+import validateAndGetFromLocalStorage from './validateAndGetFromLocalStorage'
 
 async function getDataFromServer(endpoint) {
   try {
@@ -20,15 +21,16 @@ async function cacheServerData(factor, arr) {
   for (const item of arr) {
     const k = `${factor}-${getYearMonth(item.t)}`
     const val = localStorage.getItem(k)
-    if (val) {
-      continue
+    try {
+      validateAndGetFromLocalStorage(val)
+    } catch (err) {
+      let monthArr = o[k]
+      if (!monthArr) {
+        monthArr = []
+        o[k] = monthArr
+      }
+      monthArr.push(item)      //
     }
-    let monthArr = o[k]
-    if (!monthArr) {
-      monthArr = []
-      o[k] = monthArr
-    }
-    monthArr.push(item)
   }
   for (const [k, v] of Object.entries(o)) {
     localStorage.setItem(k, JSON.stringify(v))
@@ -46,11 +48,11 @@ export default async (factor, [startYear, endYear]) => {
       const monthDataStr = localStorage.getItem(key)
       if (monthDataStr) {
         try {
-          arr.push(...JSON.parse(monthDataStr))
+          arr.push(...validateAndGetFromLocalStorage(monthDataStr))
           continue
         } catch (err) {
           console.error(err)
-          console.error('could not parse', monthDataStr)
+          console.error('could not parse', monthDataStr, 'at', key)
         }
       }
       if (!serverData) {

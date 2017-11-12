@@ -45,7 +45,7 @@ module.exports = (env) => [
         properties: true,
         unused: true,
         join_vars: true,
-        // drop_console: true,
+        drop_console: true,
       },
       mangle: {
         safari10: true,
