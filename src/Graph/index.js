@@ -5,8 +5,8 @@ import drawLine from '../utils/canvas/drawLine'
 
 import styles from './styles.css'
 
-const PADDING_X = 50
-const PADDING_Y = 20
+const PADDING_X = 50.5
+const PADDING_Y = 20.5
 
 function makeTransformFunc(arr, height) {
   const min = Math.min(...arr)
