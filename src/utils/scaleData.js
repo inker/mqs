@@ -26,7 +26,7 @@ export default (arr, newSize) => {
     const val = arr[i]
 
     const min = i * pixelsPerPoint
-    const max = (i + 1) * pixelsPerPoint
+    const max = min + pixelsPerPoint
     const minFloor = ~~min
     const maxFloor = ~~max
 
@@ -34,7 +34,7 @@ export default (arr, newSize) => {
     bins[minFloor] += val * minPortion
 
     const maxPortion = max - maxFloor
-    if (maxPortion !== 0) {
+    if (maxFloor < newSize) {
       bins[maxFloor] += val * maxPortion
     }
   }

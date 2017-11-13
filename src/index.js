@@ -1,4 +1,5 @@
 import getData from './utils/getData'
+import fromPairs from './utils/fromPairs'
 
 import createMenu from './menu'
 import createRange from './range'
@@ -6,14 +7,16 @@ import Graph from './Graph'
 
 import './global.css'
 
-const menuItems = [
+const weatherFactors = [
   {
     key: 'temperature',
     name: 'Температура',
+    strokeColor: 'red',
   },
   {
     key: 'precipitation',
     name: 'Осадки',
+    strokeColor: 'blue',
   },
 ]
 
@@ -22,7 +25,10 @@ const optionStore = {
   range: [1881, 2006],
 }
 
-const graph = new Graph(document.getElementById('graph'))
+const graph = new Graph(
+  document.getElementById('graph'),
+  fromPairs(weatherFactors.map(i => [i.key, i.strokeColor])),
+)
 
 async function getDataAndRender(newOptions) {
   Object.assign(optionStore, newOptions)
@@ -30,10 +36,12 @@ async function getDataAndRender(newOptions) {
   graph.render(data, optionStore)
 }
 
-createMenu(document.getElementById('menu'), menuItems, factor => {
+createMenu(document.getElementById('menu'), weatherFactors, factor => {
   getDataAndRender({ factor })
 })
 
 createRange(document.getElementById('range'), optionStore.range, range => {
   getDataAndRender({ range })
 })
+
+getDataAndRender(optionStore)

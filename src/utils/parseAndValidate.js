@@ -1,11 +1,25 @@
 /**
  * @function
+ * parse Json or throw error
+ * @param {string} str - string.
+ * @returns {object}
+ */
+function tryParseJson(str) {
+  try {
+    return JSON.parse(str)
+  } catch (err) {
+    throw new Error(`could not parse "${str}"`)
+  }
+}
+
+/**
+ * @function
  * Parse, validate & return
  * @param {string} val - item.
  * @returns {}
  */
 export default (val) => {
-  const arr = JSON.parse(val)
+  const arr = tryParseJson(val)
   if (!Array.isArray(arr)) {
     throw new Error('item should be an array')
   }

@@ -13,6 +13,17 @@ function createSelector(optionElements, selectedVal) {
   return el
 }
 
+function getRange(startEl, endEl) {
+  const start = startEl.value
+  const end = endEl.value
+  if (start > end) {
+    startEl.value = end
+    endEl.value = start;
+    return [end, start]
+  }
+  return [start, end]
+}
+
 export default (container, [startYear, endYear], onChange) => {
   const years = []
   for (let i = startYear; i <= endYear; ++i) {
@@ -21,7 +32,10 @@ export default (container, [startYear, endYear], onChange) => {
   const startEl = createSelector(years, startYear)
   const endEl = createSelector(years, endYear)
 
-  const handleChange = () => onChange([startEl.value, endEl.value])
+  const handleChange = () => {
+    const range = getRange(startEl, endEl)
+    onChange(range)
+  }
   startEl.addEventListener('change', handleChange)
   endEl.addEventListener('change', handleChange)
 

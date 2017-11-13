@@ -1,7 +1,7 @@
 import { server } from '../config.json'
 
 import getYearMonth from './getYearMonth'
-import validateAndGetFromLocalStorage from './validateAndGetFromLocalStorage'
+import parseAndValidate from './parseAndValidate'
 
 async function getDataFromServer(endpoint) {
   try {
@@ -23,20 +23,25 @@ async function getDataFromServer(endpoint) {
  */
 async function cacheServerData(factor, arr) {
   const o = {}
-  for (const item of arr) {
-    const k = `${factor}-${getYearMonth(item.t)}`
-    const val = localStorage.getItem(k)
+  const keys = arr.map(item => `${factor}-${getYearMonth(item.t)}`)
+  const vals = keys.map(key => localStorage.getItem(key))
+  console.time('cache prepare')
+  for (let i = 0; i < arr.length; ++i) {
+    const item = arr[i]
+    const val = vals[i]
+    const k = keys[i]
     try {
-      validateAndGetFromLocalStorage(val)
+      parseAndValidate(val)
     } catch (err) {
       let monthArr = o[k]
       if (!monthArr) {
         monthArr = []
         o[k] = monthArr
       }
-      monthArr.push(item)      //
+      monthArr.push(item)
     }
   }
+  console.timeEnd('cache prepare')
   for (const [k, v] of Object.entries(o)) {
     localStorage.setItem(k, JSON.stringify(v))
   }
@@ -45,8 +50,8 @@ async function cacheServerData(factor, arr) {
 /**
  * @function
  * Gets weather data of the specified range
- * @param {string} factor 
- * @param {[number, number]} [startYear, endYear] 
+ * @param {string} factor
+ * @param {[number, number]} [startYear, endYear]
  * @returns {Array}
  */
 export default async (factor, [startYear, endYear]) => {
@@ -59,15 +64,14 @@ export default async (factor, [startYear, endYear]) => {
       const monthDataStr = localStorage.getItem(key)
       if (monthDataStr) {
         try {
-          arr.push(...validateAndGetFromLocalStorage(monthDataStr))
+          arr.push(...parseAndValidate(monthDataStr))
           continue
         } catch (err) {
           console.error(err)
-          console.error('could not parse', monthDataStr, 'at', key)
         }
       }
       if (!serverData) {
-        console.log('fetching data from server for', factor)
+        console.log('fetching', factor, 'data from server')
         serverData = await getDataFromServer(factor)
         cacheServerData(factor, serverData)
       }
