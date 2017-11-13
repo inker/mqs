@@ -1,7 +1,18 @@
-import { server } from '../config.json'
+import { server } from '../../config.json'
 
-import getYearMonth from './getYearMonth'
-import parseAndValidate from './parseAndValidate'
+import getYearMonth from './../getYearMonth'
+import parseAndValidate from './../parseAndValidate'
+
+import Worker from 'worker-loader!./worker'
+
+const worker = new Worker()
+worker.onmessage = e => {
+  console.timeEnd('cache prepare')
+  const o = e.data
+  for (const [k, v] of Object.entries(o)) {
+    localStorage.setItem(k, JSON.stringify(v))
+  }
+}
 
 async function getDataFromServer(endpoint) {
   try {
@@ -18,33 +29,20 @@ async function getDataFromServer(endpoint) {
 
 /**
  * Caches data fetched from the server to localStorage
- * @param {string} variable 
- * @param {Array} arr 
+ * @param {string} variable
+ * @param {Array} arr
  */
 async function cacheServerData(variable, arr) {
-  const o = {}
   const keys = arr.map(item => `${variable}-${getYearMonth(item.t)}`)
   const vals = keys.map(key => localStorage.getItem(key))
   console.time('cache prepare')
-  for (let i = 0; i < arr.length; ++i) {
-    const item = arr[i]
-    const val = vals[i]
-    const k = keys[i]
-    try {
-      parseAndValidate(val)
-    } catch (err) {
-      let monthArr = o[k]
-      if (!monthArr) {
-        monthArr = []
-        o[k] = monthArr
-      }
-      monthArr.push(item)
-    }
+  console.log('sending to worker')
+  const foo = {
+    arr,
+    keys,
+    vals,
   }
-  console.timeEnd('cache prepare')
-  for (const [k, v] of Object.entries(o)) {
-    localStorage.setItem(k, JSON.stringify(v))
-  }
+  worker.postMessage(foo, [foo])
 }
 
 /**

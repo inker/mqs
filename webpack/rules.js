@@ -23,6 +23,11 @@ const getCssRule = (env, global) => env === 'dev' ? [
 
 module.exports = (env) => [
   {
+    test: /\.worker\.js$/,
+    use: 'worker-loader',
+    exclude: /node_modules/,
+  },
+  {
     test: /\.js$/,
     loader: 'babel-loader',
     exclude: /node_modules/,
