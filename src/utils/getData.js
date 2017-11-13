@@ -21,27 +21,28 @@ async function getDataFromServer(endpoint) {
  * @param {string} variable
  * @param {Array} arr
  */
-async function cacheServerData(variable, arr) {
-  const o = {}
+function cacheServerData(variable, arr, missingMonths) {
   console.time('cache prepare')
-  for (let i = 0; i < arr.length; ++i) {
-    const item = arr[i]
-    const k = `${variable}-${getYearMonth(item.t)}`
-    const val = localStorage.getItem(k)
-    const foobar = parseAndValidate(val)
-    if (!foobar) {
-      let monthArr = o[k]
-      if (!monthArr) {
-        monthArr = []
-        o[k] = monthArr
-      }
+  const buckets = {}
+  for (const item of arr) {
+    const yearMonth = getYearMonth(item.t)
+    const key = `${variable}-${yearMonth}`
+    const monthArr = buckets[key]
+    if (monthArr) {
       monthArr.push(item)
+    } else {
+      buckets[key] = [item]
     }
   }
   console.timeEnd('cache prepare')
-  for (const [k, v] of Object.entries(o)) {
-    localStorage.setItem(k, JSON.stringify(v))
+  const flat = []
+  for (const yearMonth of missingMonths) {
+    const key = `${variable}-${yearMonth}`
+    const filtered = buckets[key]
+    localStorage.setItem(key, JSON.stringify(filtered))
+    flat.push(...filtered)
   }
+  return flat
 }
 
 /**
@@ -53,27 +54,30 @@ async function cacheServerData(variable, arr) {
  */
 export default async (variable, [startYear, endYear]) => {
   const arr = []
-  let serverData
+  const missingMonths = []
+  let serverDataPromise
   for (let year = startYear; year <= endYear; ++year) {
     for (let month = 1; month <= 12; ++month) {
       const yearMonth = `${year}-${month.toString().padStart(2, '0')}`
       const key = `${variable}-${yearMonth}`
       const monthDataStr = localStorage.getItem(key)
-      if (monthDataStr) {
-        try {
-          arr.push(...parseAndValidate(monthDataStr))
-          continue
-        } catch (err) {
-          console.error(err)
-        }
+      const monthArr = parseAndValidate(monthDataStr)
+      if (monthArr) {
+        arr.push(...monthArr)
+        continue
       }
-      if (!serverData) {
+      if (!serverDataPromise) {
+        serverDataPromise = getDataFromServer(variable)
         console.log('fetching', variable, 'data from server')
-        serverData = await getDataFromServer(variable)
-        cacheServerData(variable, serverData)
       }
-      arr.push(...serverData.filter(item => item.t.startsWith(yearMonth)))
+      missingMonths.push(yearMonth)
     }
   }
-  return arr
+  if (missingMonths.length === 0) {
+    return arr
+  }
+  const serverData = await serverDataPromise
+  console.log('caching')
+  const missingItems = cacheServerData(variable, serverData, missingMonths)
+  return arr.concat(missingItems).sort((a, b) => a.t.localeCompare(b.t))
 }
