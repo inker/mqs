@@ -16,6 +16,11 @@ async function getDataFromServer(endpoint) {
   }
 }
 
+/**
+ * Caches data fetched from the server to localStorage
+ * @param {string} factor 
+ * @param {Array} arr 
+ */
 async function cacheServerData(factor, arr) {
   const o = {}
   for (const item of arr) {
@@ -37,7 +42,13 @@ async function cacheServerData(factor, arr) {
   }
 }
 
-// precipitation-2017-11
+/**
+ * @function
+ * Gets weather data of the specified range
+ * @param {string} factor 
+ * @param {[number, number]} [startYear, endYear] 
+ * @returns {Array}
+ */
 export default async (factor, [startYear, endYear]) => {
   const arr = []
   let serverData

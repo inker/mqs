@@ -24,5 +24,5 @@ http.createServer((req, res) => {
     res.statusCode(404).send('incorrect endpoint')
   }
 }).listen(serverConfig.port, () => {
-  console.log('server started', serverConfig.host, serverConfig.port)
+  console.log('server has started', serverConfig.host, serverConfig.port)
 })
