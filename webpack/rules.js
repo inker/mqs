@@ -12,6 +12,7 @@ const getCssLoader = global => global ? 'css-loader' : {
 const getCssRule = (env, global) => env === 'dev' ? [
   'style-loader',
   getCssLoader(global),
+  'postcss-loader',
 ] : ExtractTextPlugin.extract({
   fallback: 'style-loader',
   use: [
