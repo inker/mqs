@@ -18,21 +18,18 @@ async function getDataFromServer(endpoint) {
 
 /**
  * Caches data fetched from the server to localStorage
- * @param {string} variable 
- * @param {Array} arr 
+ * @param {string} variable
+ * @param {Array} arr
  */
 async function cacheServerData(variable, arr) {
   const o = {}
-  const keys = arr.map(item => `${variable}-${getYearMonth(item.t)}`)
-  const vals = keys.map(key => localStorage.getItem(key))
   console.time('cache prepare')
   for (let i = 0; i < arr.length; ++i) {
     const item = arr[i]
-    const val = vals[i]
-    const k = keys[i]
-    try {
-      parseAndValidate(val)
-    } catch (err) {
+    const k = `${variable}-${getYearMonth(item.t)}`
+    const val = localStorage.getItem(k)
+    const foobar = parseAndValidate(val)
+    if (!foobar) {
       let monthArr = o[k]
       if (!monthArr) {
         monthArr = []

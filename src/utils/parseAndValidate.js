@@ -8,7 +8,8 @@ function tryParseJson(str) {
   try {
     return JSON.parse(str)
   } catch (err) {
-    throw new Error(`could not parse "${str}"`)
+    return null
+    // throw new Error(`could not parse "${str}"`)
   }
 }
 
@@ -19,12 +20,9 @@ function tryParseJson(str) {
  * @returns {}
  */
 export default (val) => {
+  if (!val) {
+    return null
+  }
   const arr = tryParseJson(val)
-  if (!Array.isArray(arr)) {
-    throw new Error('item should be an array')
-  }
-  if (!arr.every(i => 't' in i && 'v' && i)) {
-    throw new Error("each item's element should have 'i' & 'v' keys")
-  }
-  return arr
+  return Array.isArray(arr) && arr.every(i => 't' in i && 'v' && i) && arr || null
 }
