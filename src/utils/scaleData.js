@@ -26,7 +26,7 @@ export default (arr, newSize) => {
     const val = arr[i]
 
     const min = i * pixelsPerPoint
-    const max = min + pixelsPerPoint
+    const max = (i + 1) * pixelsPerPoint
     const minFloor = ~~min
     const maxFloor = ~~max
 
