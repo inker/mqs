@@ -35,14 +35,14 @@ function cacheServerData(variable, arr, missingMonths) {
     }
   }
   console.timeEnd('cache prepare')
-  const flat = []
+  const missingItems = []
   for (const yearMonth of missingMonths) {
     const key = `${variable}-${yearMonth}`
     const filtered = buckets[key]
     localStorage.setItem(key, JSON.stringify(filtered))
-    flat.push(...filtered)
+    missingItems.push(...filtered)
   }
-  return flat
+  return missingItems
 }
 
 /**
