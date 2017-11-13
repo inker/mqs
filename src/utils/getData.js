@@ -21,7 +21,7 @@ async function getDataFromServer(endpoint) {
  * @param {string} variable
  * @param {Array} arr
  */
-function cacheServerData(variable, arr, missingMonths) {
+function cacheServerData(variable, arr, missingKeys) {
   console.time('cache prepare')
   const buckets = {}
   for (const item of arr) {
@@ -36,8 +36,7 @@ function cacheServerData(variable, arr, missingMonths) {
   }
   console.timeEnd('cache prepare')
   const missingItems = []
-  for (const yearMonth of missingMonths) {
-    const key = `${variable}-${yearMonth}`
+  for (const key of missingKeys) {
     const filtered = buckets[key]
     localStorage.setItem(key, JSON.stringify(filtered))
     missingItems.push(...filtered)
@@ -54,8 +53,9 @@ function cacheServerData(variable, arr, missingMonths) {
  */
 export default async (variable, [startYear, endYear]) => {
   const arr = []
-  const missingMonths = []
+  const missingKeys = []
   let serverDataPromise
+  console.time('foobar')
   for (let year = startYear; year <= endYear; ++year) {
     for (let month = 1; month <= 12; ++month) {
       const yearMonth = `${year}-${month.toString().padStart(2, '0')}`
@@ -70,14 +70,16 @@ export default async (variable, [startYear, endYear]) => {
         serverDataPromise = getDataFromServer(variable)
         console.log('fetching', variable, 'data from server')
       }
-      missingMonths.push(yearMonth)
+      missingKeys.push(key)
     }
   }
-  if (missingMonths.length === 0) {
+  if (missingKeys.length === 0) {
+    console.timeEnd('foobar')
     return arr
   }
   const serverData = await serverDataPromise
+  console.timeEnd('foobar')
   console.log('caching')
-  const missingItems = cacheServerData(variable, serverData, missingMonths)
+  const missingItems = cacheServerData(variable, serverData, missingKeys)
   return arr.concat(missingItems).sort((a, b) => a.t.localeCompare(b.t))
 }
