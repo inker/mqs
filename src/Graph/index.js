@@ -60,7 +60,7 @@ export default class Graph {
         x: i * foobar,
         y: vals[i],
       }
-      drawLine(ctx, a, b, strokeColors[options.factor], lineWidth)
+      drawLine(ctx, a, b, strokeColors[options.variable], lineWidth)
     }
   }
 }

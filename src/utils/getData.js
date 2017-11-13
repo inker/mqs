@@ -18,12 +18,12 @@ async function getDataFromServer(endpoint) {
 
 /**
  * Caches data fetched from the server to localStorage
- * @param {string} factor 
+ * @param {string} variable 
  * @param {Array} arr 
  */
-async function cacheServerData(factor, arr) {
+async function cacheServerData(variable, arr) {
   const o = {}
-  const keys = arr.map(item => `${factor}-${getYearMonth(item.t)}`)
+  const keys = arr.map(item => `${variable}-${getYearMonth(item.t)}`)
   const vals = keys.map(key => localStorage.getItem(key))
   console.time('cache prepare')
   for (let i = 0; i < arr.length; ++i) {
@@ -50,17 +50,17 @@ async function cacheServerData(factor, arr) {
 /**
  * @function
  * Gets weather data of the specified range
- * @param {string} factor
+ * @param {string} variable
  * @param {[number, number]} [startYear, endYear]
  * @returns {Array}
  */
-export default async (factor, [startYear, endYear]) => {
+export default async (variable, [startYear, endYear]) => {
   const arr = []
   let serverData
   for (let year = startYear; year <= endYear; ++year) {
     for (let month = 1; month <= 12; ++month) {
       const yearMonth = `${year}-${month.toString().padStart(2, '0')}`
-      const key = `${factor}-${yearMonth}`
+      const key = `${variable}-${yearMonth}`
       const monthDataStr = localStorage.getItem(key)
       if (monthDataStr) {
         try {
@@ -71,9 +71,9 @@ export default async (factor, [startYear, endYear]) => {
         }
       }
       if (!serverData) {
-        console.log('fetching', factor, 'data from server')
-        serverData = await getDataFromServer(factor)
-        cacheServerData(factor, serverData)
+        console.log('fetching', variable, 'data from server')
+        serverData = await getDataFromServer(variable)
+        cacheServerData(variable, serverData)
       }
       arr.push(...serverData.filter(item => item.t.startsWith(yearMonth)))
     }

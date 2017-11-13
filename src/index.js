@@ -7,7 +7,7 @@ import Graph from './Graph'
 
 import './global.css'
 
-const weatherFactors = [
+const weatherVariables = [
   {
     key: 'temperature',
     name: 'Температура',
@@ -21,23 +21,23 @@ const weatherFactors = [
 ]
 
 const optionStore = {
-  factor: 'temperature',
+  variable: 'temperature',
   range: [1881, 2006],
 }
 
 const graph = new Graph(
   document.getElementById('graph'),
-  fromPairs(weatherFactors.map(i => [i.key, i.strokeColor])),
+  fromPairs(weatherVariables.map(i => [i.key, i.strokeColor])),
 )
 
 async function getDataAndRender(newOptions) {
   Object.assign(optionStore, newOptions)
-  const data = await getData(optionStore.factor, optionStore.range)
+  const data = await getData(optionStore.variable, optionStore.range)
   graph.render(data, optionStore)
 }
 
-createMenu(document.getElementById('menu'), weatherFactors, factor => {
-  getDataAndRender({ factor })
+createMenu(document.getElementById('menu'), weatherVariables, variable => {
+  getDataAndRender({ variable })
 })
 
 createRange(document.getElementById('range'), optionStore.range, range => {
