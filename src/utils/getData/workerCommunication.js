@@ -8,7 +8,7 @@ function cacheData(bucketPairs) {
   }
 }
 
-export const sendMissingKeys = (id, missingKeys) =>
+const sendMissingKeys = (id, missingKeys) =>
   new Promise(resolve => {
     async function listener({ data }) {
       console.timeEnd(`worker-${data.id}`)
