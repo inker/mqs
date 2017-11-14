@@ -28,6 +28,12 @@ const sendMissingKeys = (id, missingKeys) =>
     })
   })
 
+/**
+ * @function
+ * Posts message & returns the next function
+ * @param {string} variable
+ * @returns {Function}
+ */
 export default (variable) => {
   const id = Math.random().toString(36).slice(2)
   console.time(`worker-${id}`)

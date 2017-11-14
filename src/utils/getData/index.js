@@ -12,7 +12,7 @@ import sendDataRequest from './workerCommunication'
 export default async (variable, [startYear, endYear]) => {
   const arr = []
   const missingKeys = []
-  console.time('foobar')
+  console.time('fetch data from db')
   let sendMissingKeys
   for (let year = startYear; year <= endYear; ++year) {
     for (let month = 1; month <= 12; ++month) {
@@ -31,7 +31,7 @@ export default async (variable, [startYear, endYear]) => {
       missingKeys.push(key)
     }
   }
-  console.timeEnd('foobar')
+  console.timeEnd('fetch data from db')
   if (missingKeys.length === 0) {
     return arr
   }
