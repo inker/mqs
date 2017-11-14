@@ -10,16 +10,15 @@ function cacheData(bucketPairs) {
 
 export const sendMissingKeys = (id, missingKeys) =>
   new Promise(resolve => {
-    async function listener(e) {
-      console.timeEnd(`worker-${e.data.id}`)
-      if (e.data.id !== id) {
+    async function listener({ data }) {
+      console.timeEnd(`worker-${data.id}`)
+      if (data.id !== id) {
         return
       }
       worker.removeEventListener('message', listener)
-      const { missingItems, bucketPairs } = e.data
-      resolve(missingItems)
+      resolve(data.missingItems)
       console.time('caching')
-      cacheData(bucketPairs)
+      cacheData(data.bucketPairs)
       console.timeEnd('caching')
     }
     worker.addEventListener('message', listener)
