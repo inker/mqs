@@ -44,4 +44,8 @@ createRange(document.getElementById('range'), optionStore.range, range => {
   getDataAndRender({ range })
 })
 
+document.getElementById('clear-localstorage').addEventListener('click', () => {
+  localStorage.clear()
+})
+
 getDataAndRender(optionStore)

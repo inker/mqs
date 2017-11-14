@@ -13,10 +13,18 @@
   min-width: 70%;  
 }
 
+#left-col {
+  padding-left: 100px;  
+}
+
 #menu {
   padding: 0;
-  padding-left: 100px;
   margin-top: 0;
+}
+
+#clear-localstorage {
+  width: 225px;
+  height: 30px;
 }
 
 #content {
