@@ -31,9 +31,9 @@ module.exports = (env) => [
     },
   },
   {
-    test: path => path.endsWith('.css') && !path.endsWith('global.css'),
+    test: /\.css$/,
     use: getCssRule(env, false),
-    exclude: /node_modules/,
+    exclude: /node_modules|global\.css/,
   },
   {
     test: /global\.css$/,

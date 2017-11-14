@@ -88,7 +88,7 @@ export default class Graph {
     }, 'black', 1)
     ctx.fillText(min.toPrecision(3), PADDING_X - 5, transform(min))
     ctx.fillText(max.toPrecision(3), PADDING_X - 5, transform(max))
-    if (min * max < 0) {
+    if (min * max <= 0) {
       const zeroY = transform(0)
       // has zero
       drawLine(ctx, {
