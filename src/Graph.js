@@ -1,9 +1,7 @@
-import scaleData from '../utils/scaleData'
+import scaleData from './utils/scaleData'
 
 // import objectsAreEqual from '../utils/objectsAreEqual'
-import drawLine from '../utils/canvas/drawLine'
-
-import styles from './styles.css'
+import drawLine from './utils/canvas/drawLine'
 
 const PADDING_X = 50.5
 const PADDING_Y = 20.5
@@ -30,7 +28,6 @@ export default class Graph {
    * @param {object} strokeColors
    */
   constructor(canvas, strokeColors) {
-    canvas.classList.add(styles.graph)
     this.canvas = canvas
     this.strokeColors = strokeColors
   }
@@ -103,6 +100,6 @@ export default class Graph {
       }, 'black', 1)
       ctx.fillText(0, PADDING_X - 5, zeroY)
     }
-    console.timeEnd('rendering')    
+    console.timeEnd('rendering')
   }
 }
