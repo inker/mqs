@@ -1,20 +1,8 @@
-import { server } from '../config.json'
 
-import getYearMonth from './getYearMonth'
-import parseAndValidate from './parseAndValidate'
+import getYearMonth from '../getYearMonth'
+import parseAndValidate from '../parseAndValidate'
 
-async function getDataFromServer(endpoint) {
-  try {
-    const response = await fetch(`//${server.host}:${server.port}/${endpoint}.json`)
-    if (!response.ok) {
-      throw new Error(`failed to fetch data: ${endpoint}`)
-    }
-    return await response.json()
-  } catch (err) {
-    console.error(err)
-    return null
-  }
-}
+import getDataFromServer from './getDataFromServer'
 
 /**
  * Caches data fetched from the server to localStorage
