@@ -2,6 +2,12 @@ import Worker from 'worker-loader!./worker'
 
 const worker = new Worker()
 
+function cacheData(bucketPairs) {
+  for (const [key, val] of bucketPairs) {
+    localStorage.setItem(key, val)
+  }
+}
+
 export const sendMissingKeys = (id, missingKeys) =>
   new Promise(resolve => {
     async function listener(e) {
@@ -13,10 +19,7 @@ export const sendMissingKeys = (id, missingKeys) =>
       const { missingItems, bucketPairs } = e.data
       resolve(missingItems)
       console.time('caching')
-      for (let i = 0; i < bucketPairs.length; ++i) {
-        const [key, val] = bucketPairs[i]
-        localStorage.setItem(key, val)
-      }
+      cacheData(bucketPairs)
       console.timeEnd('caching')
     }
     worker.addEventListener('message', listener)
