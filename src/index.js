@@ -1,3 +1,5 @@
+import dbPromise, { clearAllStores } from './db'
+
 import getData from './utils/getData'
 import fromPairs from './utils/fromPairs'
 
@@ -45,7 +47,7 @@ createRange(document.getElementById('range'), optionStore.range, range => {
 })
 
 document.getElementById('clear-localstorage').addEventListener('click', () => {
-  localStorage.clear()
+  dbPromise.then(clearAllStores).catch(console.error)
 })
 
 getDataAndRender(optionStore)

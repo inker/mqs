@@ -1,3 +1,5 @@
+import dbPromise, { getFromStore, getAll } from '../../db'
+
 import parseAndValidate from '../parseAndValidate'
 
 import sendDataRequest from './workerCommunication'
@@ -14,12 +16,21 @@ export default async (variable, [startYear, endYear]) => {
   const missingKeys = []
   console.time('fetch data from db')
   let sendMissingKeys
+  const db = await dbPromise.catch(err => {
+    console.error(err)
+  })
+  // console.log(db)
+  // const foo = await getAll(variable).catch(err => {
+  //   console.error(err)
+  // })
+  // console.log('foo', foo)
+  // const bar = db.objectStoreNames
   for (let year = startYear; year <= endYear; ++year) {
     for (let month = 1; month <= 12; ++month) {
       const yearMonth = `${year}-${month.toString().padStart(2, '0')}`
       const key = `${variable}-${yearMonth}`
-      const monthDataStr = localStorage.getItem(key)
-      const monthArr = parseAndValidate(monthDataStr)
+      const monthDataStr = await getFromStore(variable, yearMonth)
+      const monthArr = parseAndValidate(monthDataStr && monthDataStr.data)
       if (monthArr) {
         arr.push(...monthArr)
         continue

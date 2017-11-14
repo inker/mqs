@@ -1,14 +1,22 @@
+import { putToStore } from '../../db'
+
 import Worker from 'worker-loader!./worker'
 
 const worker = new Worker()
 
-function cacheData(bucketPairs) {
+function cacheData(variable, bucketPairs) {
+  // debugger
+  // const db = await dbPromise
+  // debugger
   for (const [key, val] of bucketPairs) {
-    localStorage.setItem(key, val)
+    putToStore(variable, {
+      yearMonth: key.split('-').slice(1, 3).join('-'),
+      data: val,
+    }).catch(console.error)
   }
 }
 
-const sendMissingKeys = (id, missingKeys) =>
+const sendMissingKeys = (id, variable, missingKeys) =>
   new Promise(resolve => {
     async function listener({ data }) {
       console.timeEnd(`worker-${data.id}`)
@@ -18,7 +26,7 @@ const sendMissingKeys = (id, missingKeys) =>
       worker.removeEventListener('message', listener)
       resolve(data.missingItems)
       console.time('caching')
-      cacheData(data.bucketPairs)
+      cacheData(variable, data.bucketPairs)
       console.timeEnd('caching')
     }
     worker.addEventListener('message', listener)
@@ -41,5 +49,5 @@ export default (variable) => {
     id,
     variable,
   })
-  return (missingKeys) => sendMissingKeys(id, missingKeys)
+  return (missingKeys) => sendMissingKeys(id, variable, missingKeys)
 }

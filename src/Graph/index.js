@@ -61,6 +61,7 @@ export default class Graph {
     const { min, max, transform } = makeTransformFunc(vals, graphHeight)
     vals = vals.map(transform)
     console.timeEnd('data transformation')
+    console.time('rendering')
 
     const ctx = canvas.getContext('2d')
     ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -102,5 +103,6 @@ export default class Graph {
       }, 'black', 1)
       ctx.fillText(0, PADDING_X - 5, zeroY)
     }
+    console.timeEnd('rendering')    
   }
 }
