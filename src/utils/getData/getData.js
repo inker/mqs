@@ -1,4 +1,4 @@
-import parseAndValidate from './parseAndValidate'
+import parseAndValidate from '../parseAndValidate'
 
 import Worker from 'worker-loader!./worker'
 

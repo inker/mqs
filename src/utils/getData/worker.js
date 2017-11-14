@@ -1,4 +1,4 @@
-import getYearMonth from './getYearMonth'
+import getYearMonth from '../getYearMonth'
 import getDataFromServer from './getDataFromServer'
 
 const promises = {}
