@@ -6,6 +6,13 @@ import drawLine from './utils/canvas/drawLine'
 const PADDING_X = 50.5
 const PADDING_Y = 20.5
 
+/**
+ * @function
+ * Normalizes the data for plotting & returns it along with the min & max values
+ * @param {number[]} arr - data array.
+ * @param {number} height - canvas' height.
+ * @returns {object} - Y values
+ */
 function makeTransformFunc(arr, height) {
   const min = Math.min(...arr)
   const max = Math.max(...arr)
