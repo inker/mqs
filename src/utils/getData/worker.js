@@ -1,4 +1,4 @@
-import dbPromise, { getAll, putToStore } from '../../db'
+import dbPromise, { getAll, putMany } from '../../db'
 
 import parseAndValidate from '../parseAndValidate'
 import { toTransferable } from '../conversion'
@@ -6,9 +6,8 @@ import { toTransferable } from '../conversion'
 import getYearMonth from '../getYearMonth'
 import getDataFromServer from './getDataFromServer'
 
-async function getBucketsFromServer(variable) {
+function getBucketsFromServer(variable, arr) {
   console.time('buckets')
-  const arr = await getDataFromServer(variable)
   const buckets = {}
   for (const item of arr) {
     const yearMonth = getYearMonth(item.t)
@@ -42,20 +41,24 @@ addEventListener('message', async ({ data }) => {
 
   const arr = []
   const missingKeys = []
-  console.time('fetch data from db')
-  let bucketsPromise
+
   const db = await dbPromise.catch(err => {
     console.error(err)
   })
-  // console.log(db)
-  const dataArr = await getAll(variable).catch(err => {
+
+  console.time('fetch data from db')
+  const getAllEvent = await getAll(variable).catch(err => {
     console.error(err)
   })
+  const dataArr = getAllEvent.target.result
+  console.timeEnd('fetch data from db')
+  console.log('total', dataArr.length, 'objects fetched from idb')
   const dataObject = {}
-  for (const { yearMonth, data: record } of dataArr.target.result) {
+  for (const { yearMonth, data: record } of dataArr) {
     dataObject[yearMonth] = parseAndValidate(record)
   }
-  // const bar = db.objectStoreNames
+
+  let fetchDataPromise
   for (let year = startYear; year <= endYear; ++year) {
     for (let month = 1; month <= 12; ++month) {
       const yearMonth = `${year}-${month.toString().padStart(2, '0')}`
@@ -65,21 +68,23 @@ addEventListener('message', async ({ data }) => {
         arr.push(...monthArr)
         continue
       }
-      if (!bucketsPromise) {
-        bucketsPromise = getBucketsFromServer(variable)
+      if (!fetchDataPromise) {
+        fetchDataPromise = getDataFromServer(variable)
         console.log(variable, 'data is corrupted or incomplete, fetching data from server')
       }
       missingKeys.push(key)
     }
   }
-  console.timeEnd('fetch data from db')
+
   if (missingKeys.length === 0) {
     const buffer = toTransferable({ id, arr })
     postMessage(buffer, [buffer])
     return
   }
   console.time('missings')
-  const buckets = await bucketsPromise
+  const serverArr = await fetchDataPromise
+  const buckets = getBucketsFromServer(variable, serverArr)
+
   for (const key of missingKeys) {
     const filtered = buckets[key]
     arr.push(...filtered)
@@ -92,15 +97,9 @@ addEventListener('message', async ({ data }) => {
   console.timeEnd('sending data back')
 
   // cache
-  const bucketPairs = []
-  for (const key of missingKeys) {
-    const filtered = buckets[key]
-    bucketPairs.push([key, JSON.stringify(filtered)])
-  }
-  for (const [key, val] of bucketPairs) {
-    putToStore(variable, {
-      yearMonth: key.split('-').slice(1, 3).join('-'),
-      data: val,
-    }).catch(console.error)
-  }
+  const records = missingKeys.map(key => ({
+    yearMonth: key.split('-').slice(1, 3).join('-'),
+    data: JSON.stringify(buckets[key]),
+  }))
+  putMany(variable, records)
 })

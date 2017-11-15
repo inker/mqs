@@ -1,11 +1,10 @@
 import { dbName } from './config.json'
 
-let store
 let db
 
-const a = new Promise((resolve) => {
-  if (store) {
-    resolve(store)
+export default new Promise((resolve) => {
+  if (db) {
+    resolve(db)
   }
 
   const request = indexedDB.open(dbName, 2)
@@ -14,19 +13,19 @@ const a = new Promise((resolve) => {
     alert('could not connect to the database')
   }
 
-  let promises  
+  let promises
 
   request.onupgradeneeded = e => {
     console.log('upgrade needed', e)
-    const db = e.target.result
+    const upgradedDb = e.target.result
 
     promises = ['temperature', 'precipitation'].map(storeName => new Promise(res => {
-      if (db.objectStoreNames.contains(storeName)) {
+      if (upgradedDb.objectStoreNames.contains(storeName)) {
         res()
       }
-      const s = db.createObjectStore(storeName, { keyPath: 'yearMonth' })
+      const s = upgradedDb.createObjectStore(storeName, { keyPath: 'yearMonth' })
       s.transaction.oncomplete = () => {
-        store = db.transaction(storeName, 'readwrite').objectStore(storeName)
+        const store = upgradedDb.transaction(storeName, 'readwrite').objectStore(storeName)
         res(store)
       }
     }))
@@ -40,7 +39,6 @@ const a = new Promise((resolve) => {
     }
 
     try {
-      // debugger
       if (promises) {
         await Promise.all(promises)
       }
@@ -52,8 +50,6 @@ const a = new Promise((resolve) => {
     resolve(db)
   }
 })
-
-export default a
 
 export const getFromStore = (storeName, key) =>
   new Promise(resolve => {
@@ -83,6 +79,18 @@ export const putToStore = (storeName, o) =>
     req.onsuccess = resolve
   })
 
+export const putMany = (storeName, arr) =>
+  new Promise((resolve, reject) => {
+    const store = db.transaction(storeName, 'readwrite').objectStore(storeName)
+    let i = 0
+    function putNext() {
+      const req = store.put(arr[i])
+      req.onsuccess = ++i < arr.length ? putNext : resolve
+      req.onerror = reject
+    }
+    putNext()
+  })
+
 export const clearStore = (storeName) =>
   new Promise((resolve, reject) => {
     const req = db
@@ -94,6 +102,6 @@ export const clearStore = (storeName) =>
   })
 
 export function clearAllStores() {
-  const promises = [...db.objectStoreNames].map(clearStore)
+  const promises = Array.prototype.map.call(db.objectStoreNames, clearStore)
   return Promise.all(promises)
 }
