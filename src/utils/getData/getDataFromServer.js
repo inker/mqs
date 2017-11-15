@@ -1,6 +1,7 @@
 import { server } from '../../config.json'
 
 export default async (endpoint) => {
+  console.log('getting data from server:', endpoint)
   try {
     const response = await fetch(`//${server.host}:${server.port}/${endpoint}.json`)
     if (!response.ok) {

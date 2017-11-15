@@ -67,7 +67,7 @@ export const getFromStore = (storeName, key) =>
 export const getAll = (storeName) =>
   new Promise(resolve => {
     db
-      .transaction([storeName], 'readwrite')
+      .transaction(storeName)
       .objectStore(storeName)
       .getAll()
       .onsuccess = resolve

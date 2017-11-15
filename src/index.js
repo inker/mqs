@@ -46,7 +46,7 @@ createRange(document.getElementById('range'), optionStore.range, range => {
   getDataAndRender({ range })
 })
 
-document.getElementById('clear-localstorage').addEventListener('click', () => {
+document.getElementById('clear-idb').addEventListener('click', () => {
   dbPromise.then(clearAllStores).catch(console.error)
 })
 
