@@ -1,3 +1,4 @@
+import { weatherVariables, yearRange } from './config.json'
 import dbPromise, { clearAllStores } from './db'
 
 import getData from './utils/getData'
@@ -9,22 +10,9 @@ import Graph from './Graph'
 
 import './global.css'
 
-const weatherVariables = [
-  {
-    key: 'temperature',
-    name: 'Температура',
-    strokeColor: 'red',
-  },
-  {
-    key: 'precipitation',
-    name: 'Осадки',
-    strokeColor: 'blue',
-  },
-]
-
 const optionStore = {
-  variable: 'temperature',
-  range: [1881, 2006],
+  variable: weatherVariables[0].key,
+  range: yearRange,
 }
 
 const graph = new Graph(

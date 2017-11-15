@@ -1,4 +1,6 @@
-import { dbName } from './config.json'
+import { dbName, weatherVariables } from './config.json'
+
+const storeNames = weatherVariables.map(i => i.key)
 
 let db
 
@@ -19,7 +21,7 @@ export default new Promise((resolve) => {
     console.log('upgrade needed', e)
     const upgradedDb = e.target.result
 
-    promises = ['temperature', 'precipitation'].map(storeName => new Promise(res => {
+    promises = storeNames.map(storeName => new Promise(res => {
       if (upgradedDb.objectStoreNames.contains(storeName)) {
         res()
       }

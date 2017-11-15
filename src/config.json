@@ -3,5 +3,18 @@
     "host": "localhost",
     "port": 8888
   },
-  "dbName": "test-task"
+  "dbName": "test-task",
+  "weatherVariables": [
+    {
+      "key": "temperature",
+      "name": "Температура",
+      "strokeColor": "red"
+    },
+    {
+      "key": "precipitation",
+      "name": "Осадки",
+      "strokeColor": "blue"
+    }
+  ],
+  "yearRange": [1881, 2006]
 }
