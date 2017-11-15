@@ -15,13 +15,13 @@ export default new Promise((resolve) => {
     alert('could not connect to the database')
   }
 
-  let promises
+  let createStorePromises
 
   request.onupgradeneeded = e => {
     console.log('upgrade needed', e)
     const upgradedDb = e.target.result
 
-    promises = storeNames.map(storeName => new Promise(res => {
+    createStorePromises = storeNames.map(storeName => new Promise(res => {
       if (upgradedDb.objectStoreNames.contains(storeName)) {
         res()
       }
@@ -41,8 +41,8 @@ export default new Promise((resolve) => {
     }
 
     try {
-      if (promises) {
-        await Promise.all(promises)
+      if (createStorePromises) {
+        await Promise.all(createStorePromises)
       }
     } catch (err) {
       console.error('promises failed')

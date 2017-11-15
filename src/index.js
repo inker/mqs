@@ -35,7 +35,9 @@ createRange(document.getElementById('range'), optionStore.range, range => {
 })
 
 document.getElementById('clear-idb').addEventListener('click', () => {
-  dbPromise.then(clearAllStores).catch(console.error)
+  dbPromise.then(clearAllStores)
+    .then(() => alert('IDB successfully cleared'))
+    .catch(console.error)
 })
 
 getDataAndRender(optionStore)

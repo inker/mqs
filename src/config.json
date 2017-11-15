@@ -7,12 +7,12 @@
   "weatherVariables": [
     {
       "key": "temperature",
-      "name": "Температура",
+      "name": "Temperature",
       "strokeColor": "red"
     },
     {
       "key": "precipitation",
-      "name": "Осадки",
+      "name": "Precipitation",
       "strokeColor": "blue"
     }
   ],
