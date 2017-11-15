@@ -2,6 +2,19 @@ import { fromTransferable } from '../conversion'
 
 import Worker from 'worker-loader!./worker'
 
+const resolvers = {}
+
+const worker = new Worker()
+
+worker.onmessage = ({ data }) => {
+  const { id, arr } = fromTransferable(data)
+  console.timeEnd(`worker-${id}`)
+  resolvers[id](arr)
+  resolvers[id] = undefined
+}
+
+worker.onerror = console.error
+
 /**
  * @function
  * Gets weather data of the specified range
@@ -12,15 +25,9 @@ import Worker from 'worker-loader!./worker'
 export default (variable, range) => {
   const id = Math.random().toString(36).slice(2)
   console.time(`worker-${id}`)
-  console.time('creating worker')
-  const worker = new Worker()
-  return new Promise((resolve, reject) => {
-    worker.onmessage = e => {
-      console.timeEnd(`worker-${id}`)
-      resolve(fromTransferable(e.data))
-    }
-    worker.onerror = reject
-    console.timeEnd('creating worker')
+
+  return new Promise((resolve) => {
+    resolvers[id] = resolve
     worker.postMessage({
       id,
       variable,

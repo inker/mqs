@@ -32,6 +32,7 @@ addEventListener('message', async ({ data }) => {
   console.log('data received')
 
   const {
+    id,
     variable,
     range: [
       startYear,
@@ -73,7 +74,7 @@ addEventListener('message', async ({ data }) => {
   }
   console.timeEnd('fetch data from db')
   if (missingKeys.length === 0) {
-    const buffer = toTransferable(arr)
+    const buffer = toTransferable({ id, arr })
     postMessage(buffer, [buffer])
     return
   }
@@ -83,9 +84,9 @@ addEventListener('message', async ({ data }) => {
     const filtered = buckets[key]
     arr.push(...filtered)
   }
-  const o = arr.sort((a, b) => a < b ? -1 : a > b ? 1 : 0)
+  arr.sort((a, b) => a < b ? -1 : a > b ? 1 : 0)
   console.timeEnd('missings')
-  const buffer = toTransferable(o)
+  const buffer = toTransferable({ id, arr })
   console.time('sending data back')
   postMessage(buffer, [buffer])
   console.timeEnd('sending data back')
