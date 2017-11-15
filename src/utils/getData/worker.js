@@ -47,7 +47,8 @@ addEventListener('message', async ({ data }) => {
   })
 
   console.time('fetch data from db')
-  const getAllEvent = await getAll(variable).catch(err => {
+  const keyRange = IDBKeyRange.bound(`${startYear}-01`, `${endYear}-12`)
+  const getAllEvent = await getAll(variable, keyRange).catch(err => {
     console.error(err)
   })
   const dataArr = getAllEvent.target.result
