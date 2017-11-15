@@ -1,4 +1,5 @@
 import { fromTransferable } from '../conversion'
+import generateId from '../generateId'
 
 import Worker from 'worker-loader!./worker'
 
@@ -23,7 +24,7 @@ worker.onerror = console.error
  * @returns {Array}
  */
 export default (variable, range) => {
-  const id = Math.random().toString(36).slice(2)
+  const id = generateId()
   console.time(`worker-${id}`)
 
   return new Promise((resolve) => {
