@@ -62,7 +62,7 @@ export const getFromStore = (storeName, key) =>
       .onsuccess = e => resolve(e.target.result)
   })
 
-export const getAll = (storeName, keyRange) =>
+export const getMany = (storeName, keyRange) =>
   new Promise(resolve => {
     db
       .transaction(storeName)

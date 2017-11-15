@@ -1,4 +1,4 @@
-import { fromTransferable } from '../conversion'
+import fromBuffer from '../transferable/fromBuffer'
 import generateId from '../generateId'
 
 import Worker from 'worker-loader!./worker'
@@ -8,7 +8,7 @@ const resolvers = {}
 const worker = new Worker()
 
 worker.onmessage = ({ data }) => {
-  const { id, arr } = fromTransferable(data)
+  const { id, arr } = fromBuffer(data)
   console.timeEnd(`worker-${id}`)
   resolvers[id](arr)
   resolvers[id] = undefined

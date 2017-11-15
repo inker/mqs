@@ -1,12 +1,13 @@
-import dbPromise, { getAll, putMany } from '../../db'
+import dbPromise, { getMany, putMany } from '../../db'
 
+import ensureIncreasing from '../ensureIncreasing'
 import parseAndValidate from '../parseAndValidate'
-import { toTransferable } from '../conversion'
+import toBuffer from '../transferable/toBuffer'
 
 import getYearMonth from '../getYearMonth'
 import getDataFromServer from './getDataFromServer'
 
-function getBucketsFromServer(variable, arr) {
+function toBuckets(variable, arr) {
   console.time('buckets')
   const buckets = {}
   for (const item of arr) {
@@ -42,18 +43,21 @@ addEventListener('message', async ({ data }) => {
   const arr = []
   const missingKeys = []
 
-  const db = await dbPromise.catch(err => {
+  // ensure idb is enabled
+  await dbPromise.catch(err => {
     console.error(err)
   })
 
   console.time('fetch data from db')
   const keyRange = IDBKeyRange.bound(`${startYear}-01`, `${endYear}-12`)
-  const getAllEvent = await getAll(variable, keyRange).catch(err => {
+  const getManyEvent = await getMany(variable, keyRange).catch(err => {
     console.error(err)
   })
-  const dataArr = getAllEvent.target.result
+  const dataArr = getManyEvent.target.result
   console.timeEnd('fetch data from db')
   console.log('total', dataArr.length, 'objects fetched from idb')
+
+  // bucketize
   const dataObject = {}
   for (const { yearMonth, data: record } of dataArr) {
     dataObject[yearMonth] = parseAndValidate(record)
@@ -78,21 +82,28 @@ addEventListener('message', async ({ data }) => {
   }
 
   if (missingKeys.length === 0) {
-    const buffer = toTransferable({ id, arr })
+    // all data is present
+    console.time('sorting')
+    const sortedArr = ensureIncreasing(arr, item => item.t)
+    console.timeEnd('sorting')
+    const buffer = toBuffer({ id, arr: sortedArr })
     postMessage(buffer, [buffer])
     return
   }
+
+  // fill up missing data
   console.time('missings')
   const serverArr = await fetchDataPromise
-  const buckets = getBucketsFromServer(variable, serverArr)
-
+  const buckets = toBuckets(variable, serverArr)
   for (const key of missingKeys) {
     const filtered = buckets[key]
     arr.push(...filtered)
   }
-  arr.sort((a, b) => a < b ? -1 : a > b ? 1 : 0)
+  console.time('sorting')
+  const sortedArr = ensureIncreasing(arr, item => item.t)
+  console.timeEnd('sorting')
   console.timeEnd('missings')
-  const buffer = toTransferable({ id, arr })
+  const buffer = toBuffer({ id, arr: sortedArr })
   console.time('sending data back')
   postMessage(buffer, [buffer])
   console.timeEnd('sending data back')
