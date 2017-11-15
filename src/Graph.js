@@ -44,9 +44,11 @@ export default class Graph {
     }
     //
     const { canvas, strokeColors } = this
+    const { variable, range } = options
     const graphHeight = canvas.height - PADDING_Y * 2
     const graphWidth = canvas.width - PADDING_X * 2
 
+    // data transformation
     console.time('data transformation')
     let vals = data.map(item => item.v)
     let dx = 1
@@ -60,11 +62,12 @@ export default class Graph {
     console.timeEnd('data transformation')
     console.time('rendering')
 
+    // init context
     const ctx = canvas.getContext('2d')
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     ctx.font = '15px sans-serif'
-    ctx.textAlign = 'right'
 
+    // function graph
     const lineWidth = 0.5
     for (let i = 1; i < vals.length; ++i) {
       const prevI = i - 1
@@ -76,18 +79,39 @@ export default class Graph {
         x: i * dx + PADDING_X,
         y: vals[i],
       }
-      drawLine(ctx, a, b, strokeColors[options.variable], lineWidth)
+      drawLine(ctx, a, b, strokeColors[variable], lineWidth)
     }
 
-    drawLine(ctx, {
-      x: PADDING_X,
-      y: transform(min),
-    }, {
-      x: PADDING_X,
-      y: transform(max),
-    }, 'black', 1)
-    ctx.fillText(min.toPrecision(3), PADDING_X - 5, transform(min))
-    ctx.fillText(max.toPrecision(3), PADDING_X - 5, transform(max))
+    // axes
+    const minY = transform(min)
+    const maxY = transform(max)
+
+    // vertical
+    const [startYear, endYear] = range
+    const numYears = endYear - startYear + 1
+    const pixelsPerYear = graphWidth / numYears
+    const minPixelsPerYear = 50
+    const iStep = Math.ceil(minPixelsPerYear / pixelsPerYear)
+    // pixelsPerYear *= iStep
+    ctx.textAlign = 'center'
+    for (let i = startYear; i <= endYear + 1; i += iStep) {
+      const x = ~~(PADDING_X + pixelsPerYear * (i - startYear)) + 0.5
+      ctx.fillText(i, x, minY + 20)
+      const isInitial = i === startYear
+      drawLine(ctx, {
+        x,
+        y: minY,
+      }, {
+        x,
+        y: maxY,
+      }, isInitial ? 'black' : 'gray', isInitial ? 1 : 0.5)
+    }
+
+    ctx.textAlign = 'right'
+    ctx.fillText(min.toPrecision(3), PADDING_X - 5, minY)
+    ctx.fillText(max.toPrecision(3), PADDING_X - 5, maxY)
+
+    // horizontal
     if (min * max <= 0) {
       const zeroY = transform(0)
       // has zero
@@ -100,6 +124,7 @@ export default class Graph {
       }, 'black', 1)
       ctx.fillText(0, PADDING_X - 5, zeroY)
     }
+
     console.timeEnd('rendering')
   }
 }

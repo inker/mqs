@@ -14,8 +14,8 @@ function createSelector(optionElements, selectedVal) {
 }
 
 function getRange(startEl, endEl) {
-  const start = startEl.value
-  const end = endEl.value
+  const start = +startEl.value
+  const end = +endEl.value
   if (start > end) {
     startEl.value = end
     endEl.value = start;
