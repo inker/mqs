@@ -1,7 +1,7 @@
 import { weatherVariables, yearRange } from './config.json'
 import dbPromise, { clearAllStores } from './db'
 
-import getData from './utils/getData'
+import fetchData from './fetchData'
 import fromPairs from './utils/fromPairs'
 
 import createMenu from './menu'
@@ -22,7 +22,7 @@ const graph = new Graph(
 
 async function getDataAndRender(newOptions) {
   Object.assign(optionStore, newOptions)
-  const data = await getData(optionStore.variable, optionStore.range)
+  const data = await fetchData(optionStore.variable, optionStore.range)
   graph.render(data, optionStore)
 }
 

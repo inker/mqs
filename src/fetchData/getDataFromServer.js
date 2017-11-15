@@ -1,4 +1,4 @@
-import { server } from '../../config.json'
+import { server } from '../config.json'
 
 export default async (endpoint) => {
   console.log('getting data from server:', endpoint)

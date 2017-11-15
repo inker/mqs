@@ -1,10 +1,10 @@
-import dbPromise, { getMany, putMany } from '../../db'
+import dbPromise, { getMany, putMany } from '../db'
 
-import ensureIncreasing from '../ensureIncreasing'
-import parseAndValidate from '../parseAndValidate'
-import toBuffer from '../transferable/toBuffer'
+import ensureIncreasing from '../utils/ensureIncreasing'
+import parseAndValidate from '../utils/parseAndValidate'
+import toBuffer from '../utils/transferable/toBuffer'
 
-import getYearMonth from '../getYearMonth'
+import getYearMonth from '../utils/getYearMonth'
 import getDataFromServer from './getDataFromServer'
 
 function toBuckets(variable, arr) {

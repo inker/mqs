@@ -1,5 +1,5 @@
-import fromBuffer from '../transferable/fromBuffer'
-import generateId from '../generateId'
+import fromBuffer from '../utils/transferable/fromBuffer'
+import generateId from '../utils/generateId'
 
 import Worker from 'worker-loader!./worker'
 
