@@ -74,7 +74,7 @@ export const getMany = (storeName, keyRange) =>
 export const putToStore = (storeName, o) =>
   new Promise((resolve, reject) => {
     const req = db
-      .transaction([storeName], 'readwrite')
+      .transaction(storeName, 'readwrite')
       .objectStore(storeName)
       .put(o)
     req.onerror = reject
@@ -96,7 +96,7 @@ export const putMany = (storeName, arr) =>
 export const clearStore = (storeName) =>
   new Promise((resolve, reject) => {
     const req = db
-      .transaction([storeName], 'readwrite')
+      .transaction(storeName, 'readwrite')
       .objectStore(storeName)
       .clear()
     req.onerror = reject
