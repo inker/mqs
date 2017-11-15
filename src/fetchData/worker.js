@@ -12,20 +12,19 @@ function toBuckets(variable, arr) {
   const buckets = {}
   for (const item of arr) {
     const yearMonth = getYearMonth(item.t)
-    const key = `${variable}-${yearMonth}`
-    const monthArr = buckets[key]
+    const monthArr = buckets[yearMonth]
     if (monthArr) {
       monthArr.push(item)
     } else {
-      buckets[key] = [item]
+      buckets[yearMonth] = [item]
     }
   }
   console.timeEnd('buckets')
   return buckets
 }
 
-addEventListener('message', async ({ data }) => {
-  if (!data) {
+addEventListener('message', async (e) => {
+  if (!e.data) {
     return
   }
 
@@ -38,10 +37,10 @@ addEventListener('message', async ({ data }) => {
       startYear,
       endYear,
     ],
-  } = data
+  } = e.data
 
   const arr = []
-  const missingKeys = []
+  const missingMonths = []
 
   // ensure idb is enabled
   await dbPromise.catch(err => {
@@ -59,15 +58,14 @@ addEventListener('message', async ({ data }) => {
 
   // bucketize
   const dataObject = {}
-  for (const { yearMonth, data: record } of dataArr) {
-    dataObject[yearMonth] = parseAndValidate(record)
+  for (const { yearMonth, data } of dataArr) {
+    dataObject[yearMonth] = parseAndValidate(data)
   }
 
   let fetchDataPromise
   for (let year = startYear; year <= endYear; ++year) {
     for (let month = 1; month <= 12; ++month) {
       const yearMonth = `${year}-${month.toString().padStart(2, '0')}`
-      const key = `${variable}-${yearMonth}`
       const monthArr = dataObject[yearMonth]
       if (monthArr) {
         arr.push(...monthArr)
@@ -77,11 +75,11 @@ addEventListener('message', async ({ data }) => {
         fetchDataPromise = getDataFromServer(variable)
         console.log(variable, 'data is corrupted or incomplete, fetching data from server')
       }
-      missingKeys.push(key)
+      missingMonths.push(yearMonth)
     }
   }
 
-  if (missingKeys.length === 0) {
+  if (missingMonths.length === 0) {
     // all data is present
     console.time('sorting')
     const sortedArr = ensureIncreasing(arr, item => item.t)
@@ -95,8 +93,8 @@ addEventListener('message', async ({ data }) => {
   console.time('missings')
   const serverArr = await fetchDataPromise
   const buckets = toBuckets(variable, serverArr)
-  for (const key of missingKeys) {
-    const filtered = buckets[key]
+  for (const yearMonth of missingMonths) {
+    const filtered = buckets[yearMonth]
     arr.push(...filtered)
   }
   console.time('sorting')
@@ -109,9 +107,9 @@ addEventListener('message', async ({ data }) => {
   console.timeEnd('sending data back')
 
   // cache
-  const records = missingKeys.map(key => ({
-    yearMonth: key.split('-').slice(1, 3).join('-'),
-    data: JSON.stringify(buckets[key]),
+  const records = missingMonths.map(yearMonth => ({
+    yearMonth,
+    data: JSON.stringify(buckets[yearMonth]),
   }))
   putMany(variable, records)
 })
