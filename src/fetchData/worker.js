@@ -91,6 +91,7 @@ addEventListener('message', async (e) => {
 
   // fill up missing data
   console.time('missings')
+  const itemsFound = arr.length
   const serverArr = await fetchDataPromise
   const buckets = toBuckets(variable, serverArr)
   for (const yearMonth of missingMonths) {
@@ -107,7 +108,9 @@ addEventListener('message', async (e) => {
   console.timeEnd('sending data back')
 
   // cache
-  const records = missingMonths.map(yearMonth => ({
+  // cache everything if nothing was found
+  const yearMonths = itemsFound ? missingMonths : Object.keys(buckets)
+  const records = yearMonths.map(yearMonth => ({
     yearMonth,
     data: JSON.stringify(buckets[yearMonth]),
   }))

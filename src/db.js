@@ -54,21 +54,23 @@ export default new Promise((resolve) => {
 })
 
 export const getFromStore = (storeName, key) =>
-  new Promise(resolve => {
-    db
+  new Promise((resolve, reject) => {
+    const req = db
       .transaction(storeName)
       .objectStore(storeName)
       .get(key)
-      .onsuccess = e => resolve(e.target.result)
+    req.onerror = reject
+    req.onsuccess = e => resolve(e.target.result)
   })
 
 export const getMany = (storeName, keyRange) =>
-  new Promise(resolve => {
-    db
+  new Promise((resolve, reject) => {
+    const req = db
       .transaction(storeName)
       .objectStore(storeName)
       .getAll(keyRange)
-      .onsuccess = resolve
+    req.onerror = reject
+    req.onsuccess = resolve
   })
 
 export const putToStore = (storeName, o) =>
@@ -87,8 +89,8 @@ export const putMany = (storeName, arr) =>
     let i = 0
     function putNext() {
       const req = store.put(arr[i])
-      req.onsuccess = ++i < arr.length ? putNext : resolve
       req.onerror = reject
+      req.onsuccess = ++i < arr.length ? putNext : resolve
     }
     putNext()
   })
