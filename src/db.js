@@ -3,8 +3,9 @@ import { dbName, weatherVariables } from './config.json'
 const storeNames = weatherVariables.map(i => i.key)
 
 let db
+let dbPromise
 
-export default new Promise((resolve, reject) => {
+const makeConnection = () => new Promise((resolve, reject) => {
   if (db) {
     resolve(db)
   }
@@ -49,10 +50,20 @@ export default new Promise((resolve, reject) => {
       console.error('promises failed')
       throw err
     }
-    console.log('db created', db)
+
+    db.onclose = () => {
+      dbPromise = makeConnection()
+      console.error('connection lost, restarting')
+    }
+
+    console.log('connection established', db)
     resolve(db)
   }
 })
+
+dbPromise = makeConnection()
+
+export const ensureConnection = () => dbPromise || makeConnection()
 
 export const getFromStore = (storeName, key) =>
   new Promise((resolve, reject) => {

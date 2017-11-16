@@ -1,4 +1,4 @@
-import dbPromise, { getMany, putMany } from '../db'
+import { ensureConnection, getMany, putMany } from '../db'
 
 import ensureIncreasing from '../utils/ensureIncreasing'
 import parseAndValidate from '../utils/parseAndValidate'
@@ -43,7 +43,7 @@ addEventListener('message', async (e) => {
   const missingMonths = []
 
   // ensure idb is enabled
-  await dbPromise.catch(err => {
+  await ensureConnection().catch(err => {
     console.error(err)
   })
 

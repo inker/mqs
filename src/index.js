@@ -1,5 +1,5 @@
 import { weatherVariables, yearRange } from './config.json'
-import dbPromise, { clearAllStores } from './db'
+import { ensureConnection, clearAllStores } from './db'
 
 import fetchData from './fetchData'
 import fromPairs from './utils/fromPairs'
@@ -35,7 +35,7 @@ createRange(document.getElementById('range'), optionStore.range, range => {
 })
 
 document.getElementById('clear-idb').addEventListener('click', () => {
-  dbPromise.then(clearAllStores)
+  ensureConnection().then(clearAllStores)
     .then(() => alert('IDB successfully cleared'))
     .catch(console.error)
 })
