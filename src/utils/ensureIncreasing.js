@@ -26,5 +26,12 @@ function fasterSort(arr, iteratee) {
   return vals.sort(cb).map(i => i.item)
 }
 
+/**
+ * check if the array is of increasing sequence
+ * if not, sort it
+ * @param {Array} arr
+ * @param {Function} iteratee
+ * @returns {Array}
+ */
 export default (arr, iteratee) =>
   isIncreasing(arr, iteratee) ? arr : fasterSort(arr, iteratee)

@@ -59,8 +59,10 @@ addEventListener('message', async (e) => {
 
   if (missingMonths.length === 0) {
     // all data is present
-    const sortedArr = ensureIncreasing(arr, item => item.t)
-    const buffer = toBuffer({ id, arr: sortedArr })
+    const buffer = toBuffer({
+      id,
+      arr: ensureIncreasing(arr, item => item.t),
+    })
     postMessage(buffer, [buffer])
     return
   }
@@ -73,8 +75,10 @@ addEventListener('message', async (e) => {
     const filtered = buckets[yearMonth]
     arr.push(...filtered)
   }
-  const sortedArr = ensureIncreasing(arr, item => item.t)
-  const buffer = toBuffer({ id, arr: sortedArr })
+  const buffer = toBuffer({
+    id,
+    arr: ensureIncreasing(arr, item => item.t),
+  })
 
   // send data back
   postMessage(buffer, [buffer])
