@@ -64,16 +64,6 @@ dbPromise = makeConnection()
 
 export const ensureConnection = () => dbPromise || makeConnection()
 
-export const getFromStore = (storeName, key) =>
-  new Promise((resolve, reject) => {
-    const req = db
-      .transaction(storeName)
-      .objectStore(storeName)
-      .get(key)
-    req.onerror = reject
-    req.onsuccess = e => resolve(e.target.result)
-  })
-
 export const getMany = (storeName, keyRange) =>
   new Promise((resolve, reject) => {
     const req = db
@@ -82,16 +72,6 @@ export const getMany = (storeName, keyRange) =>
       .getAll(keyRange)
     req.onerror = reject
     req.onsuccess = e => resolve(e.target.result)
-  })
-
-export const putToStore = (storeName, o) =>
-  new Promise((resolve, reject) => {
-    const req = db
-      .transaction(storeName, 'readwrite')
-      .objectStore(storeName)
-      .put(o)
-    req.onerror = reject
-    req.onsuccess = resolve
   })
 
 export const putMany = (storeName, arr) =>

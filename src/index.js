@@ -40,10 +40,4 @@ createRange(document.getElementById('range'), optionStore.range, range => {
   getDataAndRender({ range })
 })
 
-document.getElementById('clear-idb').addEventListener('click', () => {
-  ensureConnection().then(clearAllStores)
-    .then(() => alert('IDB successfully cleared'))
-    .catch(console.error)
-})
-
 getDataAndRender(optionStore)
