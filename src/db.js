@@ -4,14 +4,15 @@ const storeNames = weatherVariables.map(i => i.key)
 
 let db
 
-export default new Promise((resolve) => {
+export default new Promise((resolve, reject) => {
   if (db) {
     resolve(db)
   }
 
   const request = indexedDB.open(dbName, 2)
 
-  request.onerror = () => {
+  request.onerror = (e) => {
+    reject(e)
     alert('could not connect to the database')
   }
 
@@ -70,7 +71,7 @@ export const getMany = (storeName, keyRange) =>
       .objectStore(storeName)
       .getAll(keyRange)
     req.onerror = reject
-    req.onsuccess = resolve
+    req.onsuccess = e => resolve(e.target.result)
   })
 
 export const putToStore = (storeName, o) =>

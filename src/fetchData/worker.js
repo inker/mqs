@@ -49,10 +49,10 @@ addEventListener('message', async (e) => {
 
   console.time('fetch data from db')
   const keyRange = IDBKeyRange.bound(`${startYear}-01`, `${endYear}-12`)
-  const getManyEvent = await getMany(variable, keyRange).catch(err => {
+  const dataArr = await getMany(variable, keyRange).catch(err => {
     console.error(err)
+    return []
   })
-  const dataArr = getManyEvent.target.result
   console.timeEnd('fetch data from db')
   console.log('total', dataArr.length, 'objects fetched from idb')
 
