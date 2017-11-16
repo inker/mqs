@@ -8,7 +8,6 @@ import getYearMonth from '../utils/getYearMonth'
 import getDataFromServer from './getDataFromServer'
 
 function toBuckets(variable, arr) {
-  console.time('buckets')
   const buckets = {}
   for (const item of arr) {
     const yearMonth = getYearMonth(item.t)
@@ -19,7 +18,6 @@ function toBuckets(variable, arr) {
       buckets[yearMonth] = [item]
     }
   }
-  console.timeEnd('buckets')
   return buckets
 }
 
@@ -27,8 +25,6 @@ addEventListener('message', async (e) => {
   if (!e.data) {
     return
   }
-
-  console.log('data received')
 
   const {
     id,
@@ -47,13 +43,11 @@ addEventListener('message', async (e) => {
     console.error(err)
   })
 
-  console.time('fetch data from db')
   const keyRange = IDBKeyRange.bound(`${startYear}-01`, `${endYear}-12`)
   const dataArr = await getMany(variable, keyRange).catch(err => {
     console.error(err)
     return []
   })
-  console.timeEnd('fetch data from db')
   console.log('total', dataArr.length, 'objects fetched from idb')
 
   // bucketize
@@ -62,6 +56,7 @@ addEventListener('message', async (e) => {
     dataObject[yearMonth] = parseAndValidate(data)
   }
 
+  // collect data from idb
   let fetchDataPromise
   for (let year = startYear; year <= endYear; ++year) {
     for (let month = 1; month <= 12; ++month) {
@@ -81,16 +76,13 @@ addEventListener('message', async (e) => {
 
   if (missingMonths.length === 0) {
     // all data is present
-    console.time('sorting')
     const sortedArr = ensureIncreasing(arr, item => item.t)
-    console.timeEnd('sorting')
     const buffer = toBuffer({ id, arr: sortedArr })
     postMessage(buffer, [buffer])
     return
   }
 
   // fill up missing data
-  console.time('missings')
   const itemsFound = arr.length
   const serverArr = await fetchDataPromise
   const buckets = toBuckets(variable, serverArr)
@@ -98,14 +90,11 @@ addEventListener('message', async (e) => {
     const filtered = buckets[yearMonth]
     arr.push(...filtered)
   }
-  console.time('sorting')
   const sortedArr = ensureIncreasing(arr, item => item.t)
-  console.timeEnd('sorting')
-  console.timeEnd('missings')
   const buffer = toBuffer({ id, arr: sortedArr })
-  console.time('sending data back')
+
+  // sending data back
   postMessage(buffer, [buffer])
-  console.timeEnd('sending data back')
 
   // cache
   // cache everything if nothing was found

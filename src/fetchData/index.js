@@ -9,7 +9,6 @@ const worker = new Worker()
 
 worker.onmessage = ({ data }) => {
   const { id, arr } = fromBuffer(data)
-  console.timeEnd(`worker-${id}`)
   resolvers[id](arr)
   resolvers[id] = undefined
 }
@@ -25,7 +24,6 @@ worker.onerror = console.error
  */
 export default (variable, range) => {
   const id = generateId()
-  console.time(`worker-${id}`)
 
   return new Promise((resolve) => {
     resolvers[id] = resolve

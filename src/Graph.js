@@ -56,7 +56,6 @@ export default class Graph {
     const graphWidth = canvas.width - PADDING_X * 2
 
     // data transformation
-    console.time('data transformation')
     let vals = data.map(item => item.v)
     let dx = 1
     if (vals.length < graphWidth) {
@@ -66,8 +65,8 @@ export default class Graph {
     }
     const { min, max, transform } = makeTransformFunc(vals, graphHeight)
     vals = vals.map(transform)
-    console.timeEnd('data transformation')
-    console.time('rendering')
+
+    /* RENDERING */
 
     // init context
     const ctx = canvas.getContext('2d')
@@ -131,7 +130,5 @@ export default class Graph {
       }, 'black', 1)
       ctx.fillText(0, PADDING_X - 5, zeroY)
     }
-
-    console.timeEnd('rendering')
   }
 }

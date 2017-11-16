@@ -20,7 +20,6 @@ const makeConnection = () => new Promise((resolve, reject) => {
   let createStorePromises
 
   request.onupgradeneeded = e => {
-    console.log('upgrade needed', e)
     const upgradedDb = e.target.result
 
     createStorePromises = storeNames.map(storeName => new Promise(res => {

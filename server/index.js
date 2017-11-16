@@ -3,11 +3,16 @@ const path = require('path')
 const fs = require('fs')
 const zlib = require('zlib')
 
-const { server: serverConfig } = require('../src/config.json')
+const {
+  server: {
+    host,
+    port,
+  },
+} = require('../src/config.json')
 
 http.createServer((req, res) => {
   const { url } = req
-  console.log(url)
+  console.log('requested', url)
   if (!url.endsWith('.json')) {
     res.writeHead(404)
     res.end()
@@ -23,6 +28,6 @@ http.createServer((req, res) => {
     console.error(err)
     res.statusCode(404).send('incorrect endpoint')
   }
-}).listen(serverConfig.port, () => {
-  console.log('server has started', serverConfig.host, serverConfig.port)
+}).listen(port, () => {
+  console.log('server has started', `${host}:${port}`)
 })
