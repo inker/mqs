@@ -1,25 +1,11 @@
 import { ensureConnection, getMany, putMany } from '../db'
 
 import ensureIncreasing from '../utils/ensureIncreasing'
-import parseAndValidate from '../utils/parseAndValidate'
 import toBuffer from '../utils/transferable/toBuffer'
 
-import getYearMonth from '../utils/getYearMonth'
 import getDataFromServer from './getDataFromServer'
-
-function toBuckets(variable, arr) {
-  const buckets = {}
-  for (const item of arr) {
-    const yearMonth = getYearMonth(item.t)
-    const monthArr = buckets[yearMonth]
-    if (monthArr) {
-      monthArr.push(item)
-    } else {
-      buckets[yearMonth] = [item]
-    }
-  }
-  return buckets
-}
+import bucketizeDayArray from './bucketizeDayArray'
+import bucketizeMonthArray from './bucketizeMonthArray'
 
 addEventListener('message', async (e) => {
   if (!e.data) {
@@ -50,13 +36,10 @@ addEventListener('message', async (e) => {
   })
   console.log('total', dataArr.length, 'objects fetched from idb')
 
-  // bucketize
-  const dataObject = {}
-  for (const { yearMonth, data } of dataArr) {
-    dataObject[yearMonth] = parseAndValidate(data)
-  }
+  // bucketize existing data
+  const dataObject = bucketizeMonthArray(dataArr)
 
-  // collect data from idb
+  // collect existing data
   let fetchDataPromise
   for (let year = startYear; year <= endYear; ++year) {
     for (let month = 1; month <= 12; ++month) {
@@ -85,7 +68,7 @@ addEventListener('message', async (e) => {
   // fill up missing data
   const itemsFound = arr.length
   const serverArr = await fetchDataPromise
-  const buckets = toBuckets(variable, serverArr)
+  const buckets = bucketizeDayArray(serverArr)
   for (const yearMonth of missingMonths) {
     const filtered = buckets[yearMonth]
     arr.push(...filtered)
@@ -93,7 +76,7 @@ addEventListener('message', async (e) => {
   const sortedArr = ensureIncreasing(arr, item => item.t)
   const buffer = toBuffer({ id, arr: sortedArr })
 
-  // sending data back
+  // send data back
   postMessage(buffer, [buffer])
 
   // cache
