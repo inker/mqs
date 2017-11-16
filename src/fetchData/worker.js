@@ -29,6 +29,12 @@ addEventListener('message', async (e) => {
     await ensureConnection()
   } catch (err) {
     console.error(err)
+    // send error back
+    /*
+      I could've fetched data from the server instead,
+      but the user would experience a performance degradation
+      without knowing what causes it
+    */
     postMessage({
       id,
       error: err.message,

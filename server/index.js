@@ -10,6 +10,8 @@ const {
   },
 } = require('../src/config.json')
 
+const dataPath = path.join(__dirname, 'data')
+
 http.createServer((req, res) => {
   const { url } = req
   console.log('requested', url)
@@ -23,7 +25,7 @@ http.createServer((req, res) => {
   try {
     res.setHeader('Access-Control-Allow-Origin', '*')
     res.setHeader('Content-Encoding', 'gzip')
-    fs.createReadStream(path.join(__dirname, url), 'utf8')
+    fs.createReadStream(path.join(dataPath, url), 'utf8')
       .pipe(zlib.createGzip())
       .pipe(res)
   } catch (err) {

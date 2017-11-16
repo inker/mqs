@@ -10,7 +10,7 @@ const worker = new Worker()
 worker.onmessage = ({ data }) => {
   const { id, error, arr } = data instanceof ArrayBuffer ? fromBuffer(data) : data
   if (error) {
-    callbacks[id].reject(error)
+    callbacks[id].reject(new Error(error))
   } else {
     callbacks[id].resolve(arr)
   }
