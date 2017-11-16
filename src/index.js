@@ -22,8 +22,12 @@ const graph = new Graph(
 
 async function getDataAndRender(newOptions) {
   Object.assign(optionStore, newOptions)
-  const data = await fetchData(optionStore.variable, optionStore.range)
-  graph.render(data, optionStore)
+  try {
+    const data = await fetchData(optionStore.variable, optionStore.range)
+    graph.render(data, optionStore)
+  } catch (err) {
+    alert(err.message)
+  }
 }
 
 createMenu(document.getElementById('menu'), weatherVariables, variable => {

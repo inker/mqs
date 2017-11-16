@@ -13,11 +13,13 @@ const {
 http.createServer((req, res) => {
   const { url } = req
   console.log('requested', url)
+
   if (!url.endsWith('.json')) {
     res.writeHead(404)
     res.end()
     return
   }
+
   try {
     res.setHeader('Access-Control-Allow-Origin', '*')
     res.setHeader('Content-Encoding', 'gzip')

@@ -3,14 +3,18 @@ import generateId from '../utils/generateId'
 
 import Worker from 'worker-loader!./worker'
 
-const resolvers = {}
+const callbacks = {}
 
 const worker = new Worker()
 
 worker.onmessage = ({ data }) => {
-  const { id, arr } = fromBuffer(data)
-  resolvers[id](arr)
-  resolvers[id] = undefined
+  const { id, error, arr } = data instanceof ArrayBuffer ? fromBuffer(data) : data
+  if (error) {
+    callbacks[id].reject(error)
+  } else {
+    callbacks[id].resolve(arr)
+  }
+  callbacks[id] = undefined
 }
 
 worker.onerror = console.error
@@ -25,8 +29,11 @@ worker.onerror = console.error
 export default (variable, range) => {
   const id = generateId()
 
-  return new Promise((resolve) => {
-    resolvers[id] = resolve
+  return new Promise((resolve, reject) => {
+    callbacks[id] = {
+      resolve,
+      reject,
+    }
     worker.postMessage({
       id,
       variable,

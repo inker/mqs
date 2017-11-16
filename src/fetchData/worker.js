@@ -24,10 +24,17 @@ addEventListener('message', async (e) => {
   const arr = []
   const missingMonths = []
 
-  // ensure idb is enabled
-  await ensureConnection().catch(err => {
+  // ensure connection to idb has been established
+  try {
+    await ensureConnection()
+  } catch (err) {
     console.error(err)
-  })
+    postMessage({
+      id,
+      error: err.message,
+    })
+    return
+  }
 
   const keyRange = IDBKeyRange.bound(`${startYear}-01`, `${endYear}-12`)
   const dataArr = await getMany(variable, keyRange).catch(err => {
