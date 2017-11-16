@@ -31,6 +31,7 @@ module.exports = env => ({
   devServer: {
     contentBase: distDir,
     port: webpackDevServerPort,
+    compress: env !== 'dev',
     open: true,
   },
 })
