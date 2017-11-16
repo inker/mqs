@@ -62,7 +62,12 @@ const makeConnection = () => new Promise((resolve, reject) => {
 
 dbPromise = makeConnection()
 
-export const ensureConnection = () => dbPromise || makeConnection()
+export const ensureConnection = () => {
+  if (!dbPromise) {
+    dbPromise = makeConnection()
+  }
+  return dbPromise
+}
 
 export const getMany = (storeName, keyRange) =>
   new Promise((resolve, reject) => {
