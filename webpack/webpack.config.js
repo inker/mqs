@@ -1,4 +1,7 @@
 const path = require('path')
+
+const { webpackDevServerPort } = require('../config.json')
+
 const rules = require('./rules')
 const plugins = require('./plugins')
 
@@ -19,10 +22,6 @@ module.exports = env => ({
     extensions: [
       '.js',
     ],
-    modules: [
-      path.resolve(rootDir, 'src'),
-      'node_modules',
-    ],
   },
   devtool: env === 'dev' ? 'source-map' : undefined,
   module: {
@@ -31,7 +30,7 @@ module.exports = env => ({
   plugins: plugins(env),
   devServer: {
     contentBase: distDir,
-    port: 9080,
+    port: webpackDevServerPort,
     open: true,
   },
 })

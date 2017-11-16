@@ -8,7 +8,7 @@ const {
     host,
     port,
   },
-} = require('../src/config.json')
+} = require('../config.json')
 
 const dataPath = path.join(__dirname, 'data')
 

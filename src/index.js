@@ -1,4 +1,4 @@
-import { weatherVariables, yearRange } from './config.json'
+import { weatherVariables, yearRange } from '../config.json'
 import { ensureConnection, clearAllStores } from './db'
 
 import fetchData from './fetchData'
@@ -21,6 +21,7 @@ const graph = new Graph(
 )
 
 async function getDataAndRender(newOptions) {
+  console.time('total time')
   Object.assign(optionStore, newOptions)
   try {
     const data = await fetchData(optionStore.variable, optionStore.range)
@@ -28,6 +29,7 @@ async function getDataAndRender(newOptions) {
   } catch (err) {
     alert(err.message)
   }
+  console.timeEnd('total time')
 }
 
 createMenu(document.getElementById('menu'), weatherVariables, variable => {

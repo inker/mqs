@@ -1,4 +1,4 @@
-import { dbName, weatherVariables } from './config.json'
+import { dbName, weatherVariables } from '../config.json'
 
 const storeNames = weatherVariables.map(i => i.key)
 

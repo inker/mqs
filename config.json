@@ -3,6 +3,7 @@
     "host": "localhost",
     "port": 8888
   },
+  "webpackDevServerPort": 9080,
   "dbName": "test-task",
   "weatherVariables": [
     {

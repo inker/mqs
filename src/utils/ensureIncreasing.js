@@ -1,5 +1,5 @@
 /**
- * check if the array is increasing
+ * checks if the array is increasing
  * @param {Array} arr
  * @param {Function} iteratee
  */

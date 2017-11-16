@@ -1,6 +1,5 @@
 import scaleData from './utils/scaleData'
 
-// import objectsAreEqual from '../utils/objectsAreEqual'
 import drawLine from './utils/canvas/drawLine'
 
 const PADDING_X = 50.5
@@ -40,9 +39,6 @@ export default class Graph {
   }
 
   render(data, options) {
-    // if (objectsAreEqual(this.options, options) && objectsAreEqual(this.data, data)) {
-    //   return
-    // }
     this.options = {
       ...options,
     }
